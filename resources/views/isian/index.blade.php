@@ -79,33 +79,19 @@
                     <p class="text-sm text-gray-600">Buat data isian baru</p>
                 </div>
             </a>
-
-            <a href="{{ route('isian.daftar') }}" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-                <i class="fas fa-tasks text-2xl text-purple-600 mr-4"></i>
-                <div>
-                    <p class="font-semibold text-gray-900">Kelola Isian</p>
-                    <p class="text-sm text-gray-600">Edit & hapus data</p>
-                </div>
-            </a>
             @endif
 
             <a href="{{ route('isian.list') }}" class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
                 <i class="fas fa-list text-2xl text-green-600 mr-4"></i>
                 <div>
                     <p class="font-semibold text-gray-900">Lihat List Isian</p>
-                    <p class="text-sm text-gray-600">
-                        @if(auth()->user()->isUser())
-                        Tampilkan & isi link
-                        @else
-                        Tampilkan semua data
-                        @endif
-                    </p>
+                    <p class="text-sm text-gray-600">Tampilkan semua data</p>
                 </div>
             </a>
 
             @if(auth()->user()->isVerifikator())
-            <a href="{{ route('isian.verifikasi') }}" class="flex items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition">
-                <i class="fas fa-check-double text-2xl text-orange-600 mr-4"></i>
+            <a href="{{ route('isian.verifikasi') }}" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+                <i class="fas fa-check-double text-2xl text-purple-600 mr-4"></i>
                 <div>
                     <p class="font-semibold text-gray-900">Verifikasi Isian</p>
                     <p class="text-sm text-gray-600">Proses verifikasi data</p>
@@ -122,17 +108,7 @@
             <div>
                 <h3 class="text-xl font-semibold">Selamat Datang, {{ auth()->user()->name }}!</h3>
                 <p class="mt-1">Anda login sebagai <strong>{{ auth()->user()->role->display_name }}</strong></p>
-                <p class="text-sm mt-2 opacity-90">
-                    @if(auth()->user()->isAdmin())
-                    Anda dapat mengelola semua data isian, membuat, mengedit, dan menghapus data.
-                    @elseif(auth()->user()->isVerifikator())
-                    Anda dapat memverifikasi isian yang telah diisi link oleh user.
-                    @elseif(auth()->user()->isUser())
-                    Anda dapat melihat daftar isian dan mengisi link untuk setiap isian yang tersedia.
-                    @elseif(auth()->user()->isPimpinan())
-                    Anda dapat melihat semua data dan statistik monitoring isian.
-                    @endif
-                </p>
+                <p class="text-sm mt-2 opacity-90">Gunakan menu navigasi di atas untuk mengakses fitur sesuai hak akses Anda.</p>
             </div>
         </div>
     </div>
