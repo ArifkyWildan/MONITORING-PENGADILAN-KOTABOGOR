@@ -19,8 +19,8 @@ class IsianController extends Controller
      */
     public function index()
     {
-        // TIDAK PERLU AUTHORIZATION - semua user yang login bisa akses
-        
+        $this->authorize('viewStatistics', Isian::class);
+
         $statistics = [
             'total' => Isian::count(),
             'belum_isi_link' => Isian::doesntHave('link')->count(),
@@ -32,7 +32,7 @@ class IsianController extends Controller
             })->count(),
         ];
 
-        return view('dashboard', compact('statistics'));
+        return view('isian.index', compact('statistics'));
     }
 
     /**
@@ -40,12 +40,8 @@ class IsianController extends Controller
      */
     public function daftar(Request $request)
     {
-        // Cek manual: hanya admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Hanya admin yang bisa mengakses halaman ini.');
-        }
-
-        $query = Isian::with(['bagian', 'link', 'verifikasi.verifikator']);
+        // Semua authenticated user bisa akses
+        $query = Isian::with(['bagian', 'link', 'verifikasi.verifikator', 'creator']);
 
         // Filter by bagian
         if ($request->filled('bagian_id')) {
@@ -81,8 +77,8 @@ class IsianController extends Controller
      */
     public function list(Request $request)
     {
-        // Semua user bisa akses, tidak perlu cek authorization
-        
+        $this->authorize('viewAny', Isian::class);
+
         $query = Isian::with(['bagian', 'link', 'verifikasi']);
 
         if ($request->filled('bagian_id')) {
@@ -100,10 +96,7 @@ class IsianController extends Controller
      */
     public function verifikasi(Request $request)
     {
-        // Cek manual: hanya verifikator
-        if (!auth()->user()->isVerifikator()) {
-            abort(403, 'Hanya verifikator yang bisa mengakses halaman ini.');
-        }
+        $this->authorize('verify', Isian::class);
 
         $query = Isian::with(['bagian', 'link', 'verifikasi'])
             ->has('link')
@@ -124,11 +117,7 @@ class IsianController extends Controller
      */
     public function create()
     {
-        // Cek manual: hanya admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Hanya admin yang bisa membuat isian baru.');
-        }
-        
+        $this->authorize('create', Isian::class);
         $bagians = Bagian::all();
         return view('isian.create', compact('bagians'));
     }
@@ -138,10 +127,7 @@ class IsianController extends Controller
      */
     public function store(Request $request)
     {
-        // Cek manual: hanya admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Hanya admin yang bisa membuat isian baru.');
-        }
+        $this->authorize('create', Isian::class);
 
         $validated = $request->validate([
             'bagian_id' => 'required|exists:bagians,id',
@@ -163,11 +149,7 @@ class IsianController extends Controller
      */
     public function edit(Isian $isian)
     {
-        // Cek manual: hanya admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Hanya admin yang bisa mengedit isian.');
-        }
-        
+        $this->authorize('update', $isian);
         $bagians = Bagian::all();
         return view('isian.edit', compact('isian', 'bagians'));
     }
@@ -177,10 +159,7 @@ class IsianController extends Controller
      */
     public function update(Request $request, Isian $isian)
     {
-        // Cek manual: hanya admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Hanya admin yang bisa mengedit isian.');
-        }
+        $this->authorize('update', $isian);
 
         $validated = $request->validate([
             'bagian_id' => 'required|exists:bagians,id',
@@ -198,11 +177,7 @@ class IsianController extends Controller
      */
     public function destroy(Isian $isian)
     {
-        // Cek manual: hanya admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Hanya admin yang bisa menghapus isian.');
-        }
-        
+        $this->authorize('delete', $isian);
         $isian->delete();
 
         return redirect()->route('isian.daftar')
@@ -214,10 +189,7 @@ class IsianController extends Controller
      */
     public function storeLink(Request $request, Isian $isian)
     {
-        // Cek manual: hanya user biasa
-        if (!auth()->user()->isUser()) {
-            abort(403, 'Hanya user yang bisa menambah link.');
-        }
+        $this->authorize('addLink', $isian);
 
         $validated = $request->validate([
             'text_hyperlink' => 'required|string|max:255',
@@ -239,10 +211,7 @@ class IsianController extends Controller
      */
     public function storeVerifikasi(Request $request, Isian $isian)
     {
-        // Cek manual: hanya verifikator
-        if (!auth()->user()->isVerifikator()) {
-            abort(403, 'Hanya verifikator yang bisa memverifikasi.');
-        }
+        $this->authorize('verify', $isian);
 
         $validated = $request->validate([
             'status' => 'required|in:disetujui,ditolak',
@@ -265,7 +234,7 @@ class IsianController extends Controller
      */
     public function showVerifikasi(Isian $isian)
     {
-        // Semua user bisa lihat detail verifikasi
+        $this->authorize('view', $isian);
         
         if (!$isian->isVerified()) {
             abort(404);

@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed Roles
+        // Seed Roles (4 roles: admin, verifikator, pimpinan, user)
         $roles = [
             [
                 'name' => 'admin',
@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'user',
-                'display_name' => 'User Biasa',
-                'description' => 'Can only view list isian'
+                'display_name' => 'User',
+                'description' => 'Can create and manage own isian'
             ]
         ];
 
@@ -44,36 +44,30 @@ class DatabaseSeeder extends Seeder
             Role::create($role);
         }
 
-        // Seed Users - UPDATED EMAIL
+        // Seed Users - ONLY ADMIN, VERIFIKATOR, PIMPINAN
         $users = [
             [
                 'name' => 'Admin System',
-                'email' => 'admin@pnbogor.go.id', // CHANGED: Removed ".go"
+                'email' => 'admin@pnbogor.go.id',
                 'password' => Hash::make('password'),
                 'role_id' => Role::where('name', 'admin')->first()->id,
                 'email_verified_at' => now(),
             ],
             [
                 'name' => 'Verifikator 1',
-                'email' => 'verifikator@pnbogor.go.id', // CHANGED
+                'email' => 'verifikator@pnbogor.go.id',
                 'password' => Hash::make('password'),
                 'role_id' => Role::where('name', 'verifikator')->first()->id,
                 'email_verified_at' => now(),
             ],
             [
                 'name' => 'Pimpinan PN',
-                'email' => 'pimpinan@pnbogor.go.id', // CHANGED
+                'email' => 'pimpinan@pnbogor.go.id',
                 'password' => Hash::make('password'),
                 'role_id' => Role::where('name', 'pimpinan')->first()->id,
                 'email_verified_at' => now(),
             ],
-            [
-                'name' => 'User Biasa',
-                'email' => 'user@pnbogor.go.id', // CHANGED
-                'password' => Hash::make('password'),
-                'role_id' => Role::where('name', 'user')->first()->id,
-                'email_verified_at' => now(),
-            ]
+            // User biasa akan register sendiri - tidak di-seed
         ];
 
         foreach ($users as $user) {
