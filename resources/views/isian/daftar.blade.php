@@ -26,7 +26,7 @@
                     <option value="">Semua Bagian</option>
                     @foreach($bagians as $bagian)
                     <option value="{{ $bagian->id }}" {{ request('bagian_id') == $bagian->id ? 'selected' : '' }}>
-                        {{ $bagian->nama }}
+                        {{ $bagian->nama_bagian }}
                     </option>
                     @endforeach
                 </select>
@@ -72,12 +72,19 @@
                         {{ $isians->firstItem() + $index }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
-                            {{ $isian->bagian->nama }}
-                        </span>
+                        @if($isian->bagian)
+                            <span class="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
+                                {{ $isian->bagian->nama_bagian }}
+                            </span>
+                        @else
+                            <span class="text-red-500 text-sm">Bagian tidak ditemukan</span>
+                        @endif
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-900">
                         {{ Str::limit($isian->daftar_isi, 100) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ $isian->creator->name ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         @if($isian->hasLink())
@@ -138,7 +145,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                         <i class="fas fa-inbox text-4xl mb-2"></i>
                         <p>Tidak ada data isian</p>
                     </td>

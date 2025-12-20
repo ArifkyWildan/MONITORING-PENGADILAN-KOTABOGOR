@@ -25,7 +25,7 @@
                         <option value="">-- Pilih Bagian --</option>
                         @foreach($bagians as $bagian)
                         <option value="{{ $bagian->id }}" {{ old('bagian_id') == $bagian->id ? 'selected' : '' }}>
-                            {{ $bagian->nama }}
+                            {{ $bagian->nama_bagian }}
                         </option>
                         @endforeach
                     </select>

@@ -10,7 +10,7 @@ class Bagian extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama',
+        'nama_bagian',  // ✅ SUDAH BENAR
         'slug'
     ];
 

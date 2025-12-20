@@ -16,28 +16,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ========== LIST ISIAN (SEMUA ROLE BISA AKSES) ==========
     Route::get('/isian/list', [IsianController::class, 'list'])->name('isian.list');
     
+    // ========== CREATE & STORE (ADMIN, VERIFIKATOR, USER) ==========
+    Route::get('/isian/create', [IsianController::class, 'create'])->name('isian.create');
+    Route::post('/isian', [IsianController::class, 'store'])->name('isian.store');
+    
+    // ========== DAFTAR ISIAN (SEMUA ROLE) ==========
+    Route::get('/isian/daftar', [IsianController::class, 'daftar'])->name('isian.daftar');
+    
     // ========== ADMIN ONLY ==========
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/isian/daftar', [IsianController::class, 'daftar'])->name('isian.daftar');
-        Route::get('/isian/create', [IsianController::class, 'create'])->name('isian.create');
-        Route::post('/isian', [IsianController::class, 'store'])->name('isian.store');
         Route::get('/isian/{isian}/edit', [IsianController::class, 'edit'])->name('isian.edit');
         Route::put('/isian/{isian}', [IsianController::class, 'update'])->name('isian.update');
         Route::delete('/isian/{isian}', [IsianController::class, 'destroy'])->name('isian.destroy');
     });
     
-    // ========== VERIFIKATOR ONLY ==========
-    Route::middleware(['role:verifikator'])->group(function () {
+    // ========== VERIFIKATOR & ADMIN ==========
+    Route::middleware(['role:verifikator,admin'])->group(function () {
         Route::get('/isian/verifikasi', [IsianController::class, 'verifikasi'])->name('isian.verifikasi');
         Route::post('/isian/{isian}/verifikasi', [IsianController::class, 'storeVerifikasi'])->name('isian.verifikasi.store');
     });
     
-    // ========== USER ONLY (ISI LINK) ==========
-    Route::middleware(['role:user'])->group(function () {
-        Route::post('/isian/{isian}/link', [IsianController::class, 'storeLink'])->name('isian.link.store');
-    });
+    // ========== USER & ADMIN (ISI LINK) ==========
+    Route::post('/isian/{isian}/link', [IsianController::class, 'storeLink'])->name('isian.link.store');
 
-    // ========== SHARED ROUTES (VERIFIKATOR & SEMUA USER) ==========
+    // ========== SHARED ROUTES ==========
     Route::get('/isian/{isian}/verifikasi/detail', [IsianController::class, 'showVerifikasi'])->name('isian.verifikasi.show');
 
     // ========== PROFILE (SEMUA ROLE) ==========

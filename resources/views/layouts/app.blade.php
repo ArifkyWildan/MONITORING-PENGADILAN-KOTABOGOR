@@ -41,8 +41,8 @@
                             <i class="fas fa-eye mr-2"></i>List Isian
                         </a>
 
-                        <!-- Verifikasi Isian - Verifikator Only -->
-                        @if(auth()->user()->isVerifikator())
+                        <!-- Verifikasi Isian - Verifikator & Admin -->
+                        @if(auth()->user()->isVerifikator() || auth()->user()->isAdmin())
                         <a href="{{ route('isian.verifikasi') }}" 
                            class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('isian.verifikasi') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} text-sm font-medium">
                             <i class="fas fa-check-circle mr-2"></i>Verifikasi Isian
@@ -116,5 +116,7 @@
             }
         });
     </script>
+    
+    @stack('scripts')
 </body>
 </html>

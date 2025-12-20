@@ -94,23 +94,23 @@ class IsianController extends Controller
     /**
      * Display verifikasi page (Verifikator only)
      */
-    public function verifikasi(Request $request)
-    {
-        $this->authorize('verify', Isian::class);
+   public function verifikasi(Request $request)
+{
+    $this->authorize('verify', Isian::class);
 
-        $query = Isian::with(['bagian', 'link', 'verifikasi'])
-            ->has('link')
-            ->doesntHave('verifikasi');
+    $query = Isian::with(['bagian', 'link', 'verifikasi', 'creator'])
+        ->has('link')
+        ->doesntHave('verifikasi');
 
-        if ($request->filled('bagian_id')) {
-            $query->where('bagian_id', $request->bagian_id);
-        }
-
-        $isians = $query->latest()->paginate(15);
-        $bagians = Bagian::all();
-
-        return view('isian.verifikasi', compact('isians', 'bagians'));
+    if ($request->filled('bagian_id')) {
+        $query->where('bagian_id', $request->bagian_id);
     }
+
+    $isians = $query->latest()->paginate(15);
+    $bagians = Bagian::all();
+
+    return view('isian.verifikasi', compact('isians', 'bagians'));
+}
 
     /**
      * Show create form
@@ -209,42 +209,52 @@ class IsianController extends Controller
     /**
      * Store verifikasi
      */
-    public function storeVerifikasi(Request $request, Isian $isian)
-    {
-        $this->authorize('verify', $isian);
+   public function storeVerifikasi(Request $request, Isian $isian)
+{
+    $this->authorize('verify', Isian::class);
 
-        $validated = $request->validate([
-            'status' => 'required|in:disetujui,ditolak',
-            'deskripsi' => 'required|string'
-        ]);
-
-        Verifikasi::create([
-            'isian_id' => $isian->id,
-            'status' => $validated['status'],
-            'deskripsi' => $validated['deskripsi'],
-            'verifikator_id' => auth()->id(),
-            'verified_at' => now()
-        ]);
-
-        return back()->with('success', 'Verifikasi berhasil disimpan');
+    // Validasi: Isian harus punya link dan belum diverifikasi
+    if (!$isian->hasLink()) {
+        return back()->with('error', 'Isian harus memiliki link sebelum diverifikasi');
     }
+
+    if ($isian->isVerified()) {
+        return back()->with('error', 'Isian sudah diverifikasi sebelumnya');
+    }
+
+    $validated = $request->validate([
+        'status' => 'required|in:disetujui,ditolak',
+        'deskripsi' => 'required|string'
+    ]);
+
+    Verifikasi::create([
+        'isian_id' => $isian->id,
+        'status' => $validated['status'],
+        'deskripsi' => $validated['deskripsi'],
+        'verifikator_id' => auth()->id(),
+        'verified_at' => now()
+    ]);
+
+    return redirect()->route('isian.verifikasi')
+        ->with('success', 'Verifikasi berhasil disimpan');
+}
 
     /**
      * Show verifikasi detail
      */
     public function showVerifikasi(Isian $isian)
-    {
-        $this->authorize('view', $isian);
-        
-        if (!$isian->isVerified()) {
-            abort(404);
-        }
-
-        return response()->json([
-            'status' => $isian->verifikasi->status,
-            'deskripsi' => $isian->verifikasi->deskripsi,
-            'verifikator' => $isian->verifikasi->verifikator->name,
-            'verified_at' => $isian->verifikasi->verified_at->format('d M Y H:i')
-        ]);
+{
+    $this->authorize('view', $isian);
+    
+    if (!$isian->isVerified()) {
+        abort(404);
     }
+
+    return response()->json([
+        'status' => $isian->verifikasi->status,
+        'deskripsi' => $isian->verifikasi->deskripsi,
+        'verifikator' => $isian->verifikasi->verifikator->name,
+        'verified_at' => $isian->verifikasi->verified_at->format('d M Y H:i')
+    ]);
+}
 }
