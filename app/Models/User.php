@@ -20,6 +20,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'bagian_id',
     ];
 
     /**
@@ -51,6 +52,14 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Get the bagian of the user (for verifikator)
+     */
+    public function bagian()
+    {
+        return $this->belongsTo(Bagian::class);
     }
 
     /**
@@ -115,6 +124,19 @@ class User extends Authenticatable
     public function canVerify(): bool
     {
         return $this->isVerifikator();
+    }
+
+    /**
+     * Check if user can verify specific bagian
+     */
+    public function canVerifyBagian($bagianId): bool
+    {
+        if (!$this->isVerifikator()) {
+            return false;
+        }
+        
+        // Verifikator hanya bisa verifikasi bagiannya sendiri
+        return $this->bagian_id == $bagianId;
     }
 
     /**
