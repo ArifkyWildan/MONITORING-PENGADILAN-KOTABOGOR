@@ -52,8 +52,13 @@
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center mr-8">
                         <div class="bg-white bg-opacity-20 rounded-xl p-3 mr-3 backdrop-blur-sm">
-                            <i class="fas fa-gavel text-2xl text-white"></i>
-                        </div>
+    <img 
+        src="/images/logo_ma.png" 
+        alt="Gavel Icon"
+        class="w-8 h-8 object-contain"
+    >
+</div>
+
                         <div>
                             <span class="text-2xl font-bold text-white block">PN Bogor</span>
                             <span class="text-xs text-red-100">Monitoring Isian</span>
